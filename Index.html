@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xkrk - 초간단 OS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 여기어때 잘난체 폰트 적용 */
+        @font-face {
+            font-family: 'Jalnan';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.0/Jalnan.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body, button, input, textarea {
+            font-family: 'Jalnan', sans-serif, system-ui;
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col justify-between p-4 selection:bg-zinc-700 selection:text-white">
+
+    <!-- HEADER -->
+    <header class="w-full max-w-sm mx-auto flex justify-between items-center py-4 border-b border-zinc-800">
+        <button onclick="goHome()" class="text-2xl font-bold tracking-wider text-white hover:text-zinc-400 transition">
+            xkrk
+        </button>
+        <span class="text-xs text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
+            v1.0 OS
+        </span>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-sm mx-auto my-auto py-6">
+        
+        <!-- HOME LAUNCHER VIEW -->
+        <div id="homeView" class="space-y-4">
+            <div class="text-center py-4 space-y-1">
+                <h1 class="text-xl text-zinc-200">무엇을 시작할까요?</h1>
+                <p class="text-xs text-zinc-500">초간단 블랙 OS</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="openService('typing')" class="p-5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-3xl flex items-center justify-between transition group">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">⌨️</span>
+                        <div class="text-left">
+                            <div class="text-sm font-bold text-white group-hover:text-zinc-200">타자연습</div>
+                            <div class="text-[11px] text-zinc-500">애국가 1~4절 연습</div>
+                        </div>
+                    </div>
+                    <span class="text-zinc-600 group-hover:text-white transition">→</span>
+                </button>
+
+                <button onclick="openService('excel')" class="p-5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-3xl flex items-center justify-between transition group">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">📊</span>
+                        <div class="text-left">
+                            <div class="text-sm font-bold text-white group-hover:text-zinc-200">초간단 엑셀</div>
+                            <div class="text-[11px] text-zinc-500">3x3 표 연산기</div>
+                        </div>
+                    </div>
+                    <span class="text-zinc-600 group-hover:text-white transition">→</span>
+                </button>
+
+                <button onclick="openService('ppt')" class="p-5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-3xl flex items-center justify-between transition group">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">📑</span>
+                        <div class="text-left">
+                            <div class="text-sm font-bold text-white group-hover:text-zinc-200">초간단 파워포인트</div>
+                            <div class="text-[11px] text-zinc-500">2버튼 슬라이드 발표</div>
+                        </div>
+                    </div>
+                    <span class="text-zinc-600 group-hover:text-white transition">→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TYPING PRACTICE VIEW -->
+        <div id="typingView" class="hidden space-y-4">
+            <div class="p-5 bg-zinc-900 border border-zinc-800 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center text-xs text-zinc-500">
+                    <span class="font-bold text-zinc-300">⌨️ 타자연습 (애국가)</span>
+                    <button onclick="goHome()" class="hover:text-white">✕ 나가기</button>
+                </div>
+
+                <div class="bg-black p-4 rounded-2xl border border-zinc-800 space-y-2">
+                    <div class="flex justify-between text-[11px] text-zinc-500">
+                        <span id="typingVerseNum">1절</span>
+                        <span id="typingProgress">1 / 4 문장</span>
+                    </div>
+                    <div id="targetText" class="text-base font-bold text-zinc-200 tracking-wide break-keep min-h-[48px] flex items-center">
+                        동해 물과 백두산이 마르고 닳도록
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <input id="typingInput" type="text" placeholder="위 문장을 그대로 따라 쓰세요..." 
+                        oninput="checkTyping()" 
+                        class="w-full bg-black border border-zinc-700 text-white p-3.5 rounded-2xl text-sm outline-none focus:border-white transition">
+                    <div class="flex justify-between text-[11px] px-1 text-zinc-500">
+                        <span>일치도: <strong id="accuracyText" class="text-zinc-300">0%</strong></span>
+                        <button onclick="resetTyping()" class="underline hover:text-zinc-300">처음부터</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXCEL VIEW -->
+        <div id="excelView" class="hidden space-y-4">
+            <div class="p-5 bg-zinc-900 border border-zinc-800 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center text-xs text-zinc-500">
+                    <span class="font-bold text-zinc-300">📊 초간단 엑셀</span>
+                    <button onclick="goHome()" class="hover:text-white">✕ 나가기</button>
+                </div>
+
+                <!-- 3x3 Table Grid -->
+                <div class="grid grid-cols-3 gap-2 bg-black p-3 rounded-2xl border border-zinc-800">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="10">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="20">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="30">
+                    
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="40">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="50">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="60">
+                    
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="70">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="80">
+                    <input type="number" class="excel-cell w-full bg-zinc-900 border border-zinc-800 text-center text-sm py-3 rounded-xl text-white outline-none focus:border-white" value="90">
+                </div>
+
+                <!-- Result Box -->
+                <div class="bg-black p-4 rounded-2xl border border-zinc-800 flex justify-between items-center">
+                    <span class="text-xs text-zinc-500">총합계</span>
+                    <span id="excelResult" class="text-lg font-bold text-white">450</span>
+                </div>
+
+                <!-- EXACT 1 BUTTON FOR EXCEL -->
+                <button onclick="calculateExcel()" class="w-full py-4 bg-white hover:bg-zinc-200 text-black font-bold rounded-2xl text-sm transition">
+                    🧮 총합계 계산
+                </button>
+            </div>
+        </div>
+
+        <!-- POWERPOINT VIEW -->
+        <div id="pptView" class="hidden space-y-4">
+            <div class="p-5 bg-zinc-900 border border-zinc-800 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center text-xs text-zinc-500">
+                    <span class="font-bold text-zinc-300">📑 초간단 파워포인트</span>
+                    <button onclick="goHome()" class="hover:text-white">✕ 나가기</button>
+                </div>
+
+                <!-- Slide Canvas Box -->
+                <div class="aspect-video bg-black border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between items-center text-center">
+                    <div id="slideNum" class="text-[10px] text-zinc-600 tracking-widest">SLIDE 1 / 3</div>
+                    <div class="space-y-2 my-auto">
+                        <div id="slideTitle" class="text-lg font-bold text-white">xkrk PPT</div>
+                        <div id="slideContent" class="text-xs text-zinc-400">가장 단순한 슬라이드 서비스</div>
+                    </div>
+                    <div class="text-[10px] text-zinc-700">xkrk presentation</div>
+                </div>
+
+                <!-- Slide Edit Input Form -->
+                <div id="pptEditForm" class="hidden space-y-2 bg-black p-3.5 rounded-2xl border border-zinc-800">
+                    <input id="editTitleInput" type="text" placeholder="슬라이드 제목..." class="w-full bg-zinc-900 border border-zinc-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-white">
+                    <input id="editContentInput" type="text" placeholder="슬라이드 내용..." class="w-full bg-zinc-900 border border-zinc-700 text-white p-2.5 rounded-xl text-xs outline-none focus:border-white">
+                    <button onclick="saveSlideText()" class="w-full py-2 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl text-xs transition">
+                        ✓ 저장하기
+                    </button>
+                </div>
+
+                <!-- PPT 2 BUTTONS: Edit and Next -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="togglePPTEdit()" class="py-3.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-2xl text-sm transition flex items-center justify-center gap-1">
+                        ✏️ 글쓰기
+                    </button>
+                    <button onclick="nextSlide()" class="py-3.5 bg-white hover:bg-zinc-200 text-black font-bold rounded-2xl text-sm transition flex items-center justify-center gap-1">
+                        ➡️ 다음
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-4 border-t border-zinc-800 text-center text-xs text-zinc-600">
+        xkrk minimal os
+    </footer>
+
+    <script>
+        // Router / Navigation Logic
+        function goHome() {
+            document.getElementById('homeView').classList.remove('hidden');
+            ['typingView', 'excelView', 'pptView'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+        }
+
+        function openService(serviceName) {
+            document.getElementById('homeView').classList.add('hidden');
+            ['typingView', 'excelView', 'pptView'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(serviceName + 'View');
+            if (target) {
+                target.classList.remove('hidden');
+                if (serviceName === 'typing') {
+                    document.getElementById('typingInput').focus();
+                }
+            }
+        }
+
+        // --- 1. Typing Service Logic ---
+        const anthemSentences = [
+            { verse: "1절", text: "동해 물과 백두산이 마르고 닳도록" },
+            { verse: "2절", text: "남산 위에 저 소나무 철갑을 두른 듯" },
+            { verse: "3절", text: "가을 하늘 공활한데 높고 구름 없이" },
+            { verse: "4절", text: "이 기상과 이 마음으로 충성을 다하여" }
+        ];
+        let currentTypingIndex = 0;
+
+        function updateTypingDisplay() {
+            const item = anthemSentences[currentTypingIndex];
+            document.getElementById('typingVerseNum').innerText = item.verse;
+            document.getElementById('typingProgress').innerText = `${currentTypingIndex + 1} / ${anthemSentences.length} 문장`;
+            document.getElementById('targetText').innerText = item.text;
+            document.getElementById('typingInput').value = '';
+            document.getElementById('accuracyText').innerText = '0%';
+        }
+
+        function checkTyping() {
+            const currentText = anthemSentences[currentTypingIndex].text;
+            const inputVal = document.getElementById('typingInput').value;
+
+            let correctCount = 0;
+            for (let i = 0; i < inputVal.length; i++) {
+                if (i < currentText.length && inputVal[i] === currentText[i]) {
+                    correctCount++;
+                }
+            }
+
+            const accuracy = inputVal.length === 0 ? 0 : Math.round((correctCount / currentText.length) * 100);
+            document.getElementById('accuracyText').innerText = `${Math.min(100, accuracy)}%`;
+
+            if (inputVal === currentText) {
+                setTimeout(() => {
+                    if (currentTypingIndex < anthemSentences.length - 1) {
+                        currentTypingIndex++;
+                        updateTypingDisplay();
+                    } else {
+                        alert("🎉 애국가 4절 완독 완료!");
+                        resetTyping();
+                    }
+                }, 300);
+            }
+        }
+
+        function resetTyping() {
+            currentTypingIndex = 0;
+            updateTypingDisplay();
+        }
+
+        // --- 2. Excel Service Logic ---
+        function calculateExcel() {
+            const cells = document.querySelectorAll('.excel-cell');
+            let sum = 0;
+            cells.forEach(cell => {
+                const val = parseFloat(cell.value);
+                if (!isNaN(val)) {
+                    sum += val;
+                }
+            });
+            document.getElementById('excelResult').innerText = sum.toLocaleString();
+        }
+
+        // --- 3. PowerPoint Service Logic ---
+        const slides = [
+            { title: "xkrk PPT", content: "가장 단순한 슬라이드 서비스" },
+            { title: "핵심 기능", content: "2개 버튼으로 편집과 슬라이드 이동" },
+            { title: "발표 완료 👏", content: "모든 슬라이드가 끝났습니다." }
+        ];
+        let currentSlide = 0;
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            const slide = slides[currentSlide];
+            document.getElementById('slideNum').innerText = `SLIDE ${currentSlide + 1} / ${slides.length}`;
+            document.getElementById('slideTitle').innerText = slide.title;
+            document.getElementById('slideContent').innerText = slide.content;
+            document.getElementById('pptEditForm').classList.add('hidden');
+        }
+
+        function togglePPTEdit() {
+            const form = document.getElementById('pptEditForm');
+            const isHidden = form.classList.contains('hidden');
+            if (isHidden) {
+                document.getElementById('editTitleInput').value = slides[currentSlide].title;
+                document.getElementById('editContentInput').value = slides[currentSlide].content;
+                form.classList.remove('hidden');
+                document.getElementById('editTitleInput').focus();
+            } else {
+                form.classList.add('hidden');
+            }
+        }
+
+        function saveSlideText() {
+            const newTitle = document.getElementById('editTitleInput').value.trim() || "제목 없음";
+            const newContent = document.getElementById('editContentInput').value.trim() || "내용 없음";
+            
+            slides[currentSlide].title = newTitle;
+            slides[currentSlide].content = newContent;
+            
+            document.getElementById('slideTitle').innerText = newTitle;
+            document.getElementById('slideContent').innerText = newContent;
+            document.getElementById('pptEditForm').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
